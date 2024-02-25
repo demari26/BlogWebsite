@@ -3,11 +3,12 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_bootstrap import Bootstrap5
 from flask_ckeditor import CKEditor
+from flask_jwt_extended import JWTManager
 
 from models import db, User
 from config import Config
 
-from blueprints import guest, user
+from blueprints import guest, user, api
 
 def create_app():
     app = Flask(__name__)
@@ -17,6 +18,7 @@ def create_app():
     migrate = Migrate(app, db)
     ckeditor = CKEditor(app)
     bootstrap = Bootstrap5(app)
+    jwt = JWTManager(app)
    
     db.init_app(app)
     login_manager.init_app(app)
@@ -24,6 +26,7 @@ def create_app():
 
     app.register_blueprint(guest.guest)
     app.register_blueprint(user.authenticated_user)
+    app.register_blueprint(api.api)
 
 
     @login_manager.user_loader
