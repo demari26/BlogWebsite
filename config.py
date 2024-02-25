@@ -8,3 +8,4 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.getenv("DB_URI")
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
     JWT_TOKEN_LOCATION = ["headers", "cookies", "json", "query_string"]
+    
