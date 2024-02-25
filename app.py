@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, redirect
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_bootstrap import Bootstrap5
@@ -25,9 +25,15 @@ def create_app():
     app.register_blueprint(guest.guest)
     app.register_blueprint(user.authenticated_user)
 
+
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(user_id)
+    
+
+    @login_manager.unauthorized_handler
+    def unauthorized():
+        return redirect('/login')
 
     return app
 
