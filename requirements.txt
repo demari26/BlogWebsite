@@ -15,3 +15,5 @@ email_validator==2.1.0
 PyJWT==2.8.0
 flask_migrate
 flask_jwt_extended
+openai
+requests

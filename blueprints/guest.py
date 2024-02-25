@@ -40,7 +40,7 @@ def login():
             flash('Invalid password')
             return redirect(url_for('login'))
         login_user(user)
-        return redirect(url_for('get_all_posts'))
+        return redirect(url_for('user_views.get_all_posts'))
     return render_template("guest/login.html", form=form)
 
 

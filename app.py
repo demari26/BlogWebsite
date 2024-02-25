@@ -8,7 +8,7 @@ from flask_jwt_extended import JWTManager
 from models import db, User
 from config import Config
 
-from blueprints import guest, user, api
+from blueprints import guest, user, api, ai
 
 def create_app():
     app = Flask(__name__)
@@ -27,6 +27,7 @@ def create_app():
     app.register_blueprint(guest.guest)
     app.register_blueprint(user.authenticated_user)
     app.register_blueprint(api.api)
+    app.register_blueprint(ai.ai)
 
 
     @login_manager.user_loader

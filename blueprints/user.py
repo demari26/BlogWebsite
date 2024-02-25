@@ -4,6 +4,7 @@ from forms import CreatePostForm, CommentForm
 from models import db, BlogPost, Comment
 from middleware import admin_only
 import datetime as date
+import requests
 
 authenticated_user = Blueprint('user_views', __name__, template_folder='templates', static_folder='static')
 
@@ -42,7 +43,6 @@ def show_post(post_id):
     return render_template("post.html", post=requested_post, comment_form=comment_form)
 
 
-# TODO: Use a decorator so only an admin user can create a new post
 @authenticated_user.route("/new-post", methods=["GET", "POST"])
 @login_required
 @admin_only
@@ -94,3 +94,9 @@ def delete_post(post_id):
     db.session.delete(post_to_delete)
     db.session.commit()
     return redirect(url_for('get_all_posts'))
+
+
+@authenticated_user.route('/generate-blog')
+def generate_blog():
+    # response = requests.get(url_for('ai.generate_blog', title=))
+    pass
