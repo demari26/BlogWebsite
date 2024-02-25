@@ -25,11 +25,9 @@ def generate_token():
 @jwt_required(locations=["headers"])
 def user(id):
     user = db.session.execute(db.select(User).where(User.id == id)).scalar()
-    
     if user:
         return jsonify(user={
             "name": user.name,
             "email": user.email
         })
-    else:
-        return error("Unable to find the user")
+    return error("Unable to find the user")

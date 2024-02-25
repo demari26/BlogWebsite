@@ -23,6 +23,7 @@ def get_all_posts():
 
 
 @authenticated_user.route("/post/<int:post_id>", methods=['POST','GET'])
+@login_required
 def show_post(post_id):
     requested_post = db.get_or_404(BlogPost, post_id)
     comment_form = CommentForm()
@@ -43,6 +44,7 @@ def show_post(post_id):
 
 # TODO: Use a decorator so only an admin user can create a new post
 @authenticated_user.route("/new-post", methods=["GET", "POST"])
+@login_required
 @admin_only
 def add_new_post():
     form = CreatePostForm()
@@ -62,6 +64,8 @@ def add_new_post():
 
 
 @authenticated_user.route("/edit-post/<int:post_id>", methods=["GET", "POST"])
+@login_required
+@admin_only
 def edit_post(post_id):
     post = db.get_or_404(BlogPost, post_id)
     edit_form = CreatePostForm(
@@ -83,6 +87,7 @@ def edit_post(post_id):
 
 
 @authenticated_user.route("/delete/<int:post_id>")
+@login_required
 @admin_only
 def delete_post(post_id):
     post_to_delete = db.get_or_404(BlogPost, post_id)
