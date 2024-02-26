@@ -21,7 +21,4 @@ def generate_blog():
             {"role": "user", "content": f"Generate a blog about {title}"}
         ]
     )
-    return jsonify({
-        "title": title,
-        "message": completion.choices[0].message.content
-    })
+    return jsonify(title=title, message=completion.choices[0].message.content)

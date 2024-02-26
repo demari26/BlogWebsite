@@ -1,6 +1,6 @@
-from flask_login import login_user, LoginManager, current_user, logout_user, login_required
-from flask import Blueprint, flash, render_template, redirect, url_for
-from forms import CreatePostForm, CommentForm
+from flask_login import current_user, logout_user, login_required
+from flask import Blueprint, flash, render_template, redirect, url_for, make_response, request
+from forms import CreatePostForm, CommentForm, GenerateBlogForm
 from models import db, BlogPost, Comment
 from middleware import admin_only
 import datetime as date
@@ -12,7 +12,7 @@ authenticated_user = Blueprint('user_views', __name__, template_folder='template
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('get_all_posts'))
+    return redirect(url_for('user_views.get_all_posts'))
 
 
 @authenticated_user.route('/')
@@ -39,7 +39,8 @@ def show_post(post_id):
         )
         db.session.add(new_comment)
         db.session.commit()
-        return redirect(url_for('show_post', post_id=post_id))
+        
+        return redirect(url_for('user_views.show_post', post_id=post_id))
     return render_template("post.html", post=requested_post, comment_form=comment_form)
 
 
@@ -47,7 +48,13 @@ def show_post(post_id):
 @login_required
 @admin_only
 def add_new_post():
-    form = CreatePostForm()
+    if request.cookies.get('body'):
+        form = CreatePostForm(
+            body = request.cookies.get('body'),
+            title = request.cookies.get('title')
+        )
+    else:
+        form = CreatePostForm()
     if form.validate_on_submit():
         new_post = BlogPost(
             title=form.title.data,
@@ -55,11 +62,14 @@ def add_new_post():
             body=form.body.data,
             img_url=form.img_url.data,
             author=current_user,
-            date=date.today().strftime("%B %d, %Y")
+            date=date.datetime.today().strftime("%B %d, %Y")
         )
         db.session.add(new_post)
         db.session.commit()
-        return redirect(url_for("get_all_posts"))
+        response = make_response(redirect(url_for("user_views.get_all_posts")))
+        response.delete_cookie('body')
+        response.delete_cookie('title')
+        return response
     return render_template("make-post.html", form=form)
 
 
@@ -96,7 +106,19 @@ def delete_post(post_id):
     return redirect(url_for('get_all_posts'))
 
 
-@authenticated_user.route('/generate-blog')
+@authenticated_user.route('/generate-blog', methods=['GET','POST'])
+@login_required
 def generate_blog():
-    # response = requests.get(url_for('ai.generate_blog', title=))
-    pass
+    form = GenerateBlogForm()
+    if form.validate_on_submit():
+        response = requests.get(f"http://127.0.0.1:5000{url_for('ai_routes.generate_blog', title=form.title.data)}")
+        data = response.json()
+        form = CreatePostForm(
+            title = data["title"],
+            body = data["message"]
+        )
+        response = redirect(url_for('user_views.add_new_post'))
+        response.set_cookie('body', data["message"])
+        response.set_cookie('title', data["title"])
+        return response
+    return render_template('generate-blog.html', form=form)

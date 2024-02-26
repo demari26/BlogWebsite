@@ -30,6 +30,7 @@ include "header.html" %}
       <div class="col-lg-8 col-md-10 mx-auto">
         {{ ckeditor.load() }} {{ ckeditor.config(name='body') }} {{
         render_form(form, novalidate=True, button_map={"submit": "primary"}) }}
+        <a href="{{url_for('user_views.generate_blog')}}">Generate using AI</a>
       </div>
     </div>
   </div>

@@ -4,6 +4,7 @@ from flask_login import LoginManager
 from flask_bootstrap import Bootstrap5
 from flask_ckeditor import CKEditor
 from flask_jwt_extended import JWTManager
+from flask_gravatar import Gravatar
 
 from models import db, User
 from config import Config
@@ -19,6 +20,7 @@ def create_app():
     ckeditor = CKEditor(app)
     bootstrap = Bootstrap5(app)
     jwt = JWTManager(app)
+    gravatar = Gravatar(app, size=100, rating='g', default='retro', force_default=False, force_lower=False, use_ssl=False, base_url=None)
    
     db.init_app(app)
     login_manager.init_app(app)
